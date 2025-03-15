@@ -1,0 +1,4 @@
+rootProject.name = 'Crucible'
+
+include ':eclipse:cauldron'
+include ':eclipse:Clean'

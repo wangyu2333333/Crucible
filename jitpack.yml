@@ -1,0 +1,5 @@
+before_install:
+  - ./gradlew clean
+  - ./gradlew setupCrucible
+install:
+  - ./gradlew packageApi publishCruciblePublicationToMavenLocal
