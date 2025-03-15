@@ -1,0 +1,41 @@
+--- ../src-base/minecraft/net/minecraft/item/ItemBow.java
++++ ../src-work/minecraft/net/minecraft/item/ItemBow.java
+@@ -14,6 +14,7 @@
+ import net.minecraftforge.common.MinecraftForge;
+ import net.minecraftforge.event.entity.player.ArrowLooseEvent;
+ import net.minecraftforge.event.entity.player.ArrowNockEvent;
++import org.bukkit.craftbukkit.v1_7_R4.event.CraftEventFactory;
+ 
+ public class ItemBow extends Item
+ {
+@@ -84,6 +85,21 @@
+                 entityarrow.setFire(100);
+             }
+ 
++            // CraftBukkit start
++            org.bukkit.event.entity.EntityShootBowEvent cbEvent = CraftEventFactory.callEntityShootBowEvent(p_77615_3_, p_77615_1_, entityarrow, f);
++
++            if (cbEvent.isCancelled())
++            {
++                cbEvent.getProjectile().remove();
++                return;
++            }
++
++            if (cbEvent.getProjectile() == entityarrow.getBukkitEntity())
++            {
++                p_77615_2_.spawnEntityInWorld(entityarrow);
++            }
++
++            // CraftBukkit end
+             p_77615_1_.damageItem(1, p_77615_3_);
+             p_77615_2_.playSoundAtEntity(p_77615_3_, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+ 
+@@ -98,7 +114,7 @@
+ 
+             if (!p_77615_2_.isRemote)
+             {
+-                p_77615_2_.spawnEntityInWorld(entityarrow);
++                // p_77615_2_.spawnEntityInWorld(entityarrow); // CraftBukkit - moved up
+             }
+         }
+     }

@@ -1,0 +1,30 @@
+--- ../src-base/minecraft/cpw/mods/fml/relauncher/ServerLaunchWrapper.java
++++ ../src-work/minecraft/cpw/mods/fml/relauncher/ServerLaunchWrapper.java
+@@ -1,5 +1,7 @@
+ package cpw.mods.fml.relauncher;
+ 
++import io.github.crucible.bootstrap.CrucibleServerMainHook;
++
+ import java.lang.reflect.Method;
+ 
+ public class ServerLaunchWrapper {
+@@ -7,8 +9,9 @@
+     /**
+      * @param args
+      */
+-    public static void main(String[] args)
++    public static void main(String[] args) throws Exception
+     {
++        CrucibleServerMainHook.relaunchMain(args);
+         new ServerLaunchWrapper().run(args);
+     }
+ 
+@@ -22,7 +25,7 @@
+         Class<?> launchwrapper = null;
+         try
+         {
+-            launchwrapper = Class.forName("net.minecraft.launchwrapper.Launch",true,getClass().getClassLoader());
++            launchwrapper = Class.forName("com.gtnewhorizons.retrofuturabootstrap.Main",true,getClass().getClassLoader());
+             Class.forName("org.objectweb.asm.Type",true,getClass().getClassLoader());
+         }
+         catch (Exception e)

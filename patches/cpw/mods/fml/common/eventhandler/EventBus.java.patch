@@ -1,0 +1,99 @@
+--- ../src-base/minecraft/cpw/mods/fml/common/eventhandler/EventBus.java
++++ ../src-work/minecraft/cpw/mods/fml/common/eventhandler/EventBus.java
+@@ -9,6 +9,10 @@
+ 
+ import javax.annotation.Nonnull;
+ 
++import co.aikar.timings.Timing;
++import co.aikar.timings.Timings;
++import io.github.crucible.CrucibleTimings;
++import net.minecraft.server.MinecraftServer;
+ import org.apache.logging.log4j.Level;
+ 
+ import com.google.common.base.Preconditions;
+@@ -118,6 +122,21 @@
+         }
+     }
+ 
++    public void crucible_register(ASMEventHandler listener, Class<?> eventType, Object target, Method method, ModContainer owner) throws Exception {
++        Constructor<?> ctr = eventType.getConstructor();
++        ctr.setAccessible(true);
++        Event event = (Event)ctr.newInstance();
++        event.getListenerList().register(busID, listener.getPriority(), listener);
++
++        ArrayList<IEventListener> others = listeners.get(target);
++        if (others == null)
++        {
++            others = new ArrayList<IEventListener>();
++            listeners.put(target, others);
++        }
++        others.add(listener);
++    }
++
+     public void unregister(Object object)
+     {
+         ArrayList<IEventListener> list = listeners.remove(object);
+@@ -131,19 +150,44 @@
+ 
+     public boolean post(Event event)
+     {
+-        IEventListener[] listeners = event.getListenerList().getListeners(busID);
+-        int index = 0;
+-        try
+-        {
+-            for (; index < listeners.length; index++)
++        if (MinecraftServer.serverStarted && Timings.isTimingsEnabled()) { //Only use timings after the startup and if Timings is Enabled.
++            Timing eventTiming = CrucibleTimings.getEventTiming(event);
++            eventTiming.startTiming();
++            IEventListener[] listeners = event.getListenerList().getListeners(busID);
++            int index = 0;
++            try
+             {
+-                listeners[index].invoke(event);
++                for (; index < listeners.length; index++)
++                {
++                    Timing listenerTimings = CrucibleTimings.getListenerTiming(listeners[index],eventTiming); //Crucible
++                    listenerTimings.startTiming();
++                    listeners[index].invoke(event);
++                    listenerTimings.stopTiming();
++                }
+             }
++            catch (Throwable throwable)
++            {
++                eventTiming.stopTiming();
++                exceptionHandler.handleException(this, event, listeners, index, throwable);
++                Throwables.propagate(throwable);
++            }
++            eventTiming.stopTiming();
+         }
+-        catch (Throwable throwable)
+-        {
+-            exceptionHandler.handleException(this, event, listeners, index, throwable);
+-            Throwables.propagate(throwable);
++        else { //Original code.
++            IEventListener[] listeners = event.getListenerList().getListeners(busID);
++            int index = 0;
++            try
++            {
++                for (; index < listeners.length; index++)
++                {
++                    listeners[index].invoke(event);
++                }
++            }
++            catch (Throwable throwable)
++            {
++                exceptionHandler.handleException(this, event, listeners, index, throwable);
++                Throwables.propagate(throwable);
++            }
+         }
+         return (event.isCancelable() ? event.isCanceled() : false);
+     }
+@@ -158,4 +202,8 @@
+             FMLLog.log(Level.ERROR, "%d: %s", x, listeners[x]);
+         }
+     }
++
++    public ConcurrentHashMap<Object, ArrayList<IEventListener>> getListeners() {
++        return listeners;
++    }
+ }

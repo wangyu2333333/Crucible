@@ -1,0 +1,440 @@
+--- ../src-base/minecraft/org/bukkit/entity/Player.java
++++ ../src-work/minecraft/org/bukkit/entity/Player.java
+@@ -1,24 +1,15 @@
+ package org.bukkit.entity;
+ 
+-import java.net.InetSocketAddress;
+-
+-import org.bukkit.Achievement;
+-import org.bukkit.ChatColor;
+-import org.bukkit.Effect;
+-import org.bukkit.Instrument;
+-import org.bukkit.Location;
+-import org.bukkit.Material;
+-import org.bukkit.Note;
+-import org.bukkit.OfflinePlayer;
+-import org.bukkit.Sound;
+-import org.bukkit.Statistic;
+-import org.bukkit.WeatherType;
++import net.md_5.bungee.api.chat.BaseComponent;
++import org.bukkit.*;
+ import org.bukkit.command.CommandSender;
+ import org.bukkit.conversations.Conversable;
+ import org.bukkit.map.MapView;
+ import org.bukkit.plugin.messaging.PluginMessageRecipient;
+ import org.bukkit.scoreboard.Scoreboard;
+ 
++import java.net.InetSocketAddress;
++
+ /**
+  * Represents a player, connected or not
+  */
+@@ -309,8 +300,8 @@
+      * Send a sign change. This fakes a sign change packet for a user at
+      * a certain location. This will not actually change the world in any way.
+      * This method will use a sign at the location's block or a faked sign
+-     * sent via {@link #sendBlockChange(org.bukkit.Location, int, byte)} or
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.
++     * sent via {@link #sendBlockChange(Location, int, byte)} or
++     * {@link #sendBlockChange(Location, Material, byte)}.
+      * <p>
+      * If the client does not have a sign at the given location it will
+      * display an error message to the user.
+@@ -860,7 +851,7 @@
+      *
+      * @return True if the player standing on a solid block, else false.
+      * @deprecated Inconsistent with {@link
+-     *     org.bukkit.entity.Entity#isOnGround()}
++     *     Entity#isOnGround()}
+      */
+     @Deprecated
+     public boolean isOnGround();
+@@ -1035,4 +1026,388 @@
+      * @see Player#setHealthScaled(boolean)
+      */
+     public double getHealthScale();
++
++
++    // Spigot start
++    public class Spigot extends Entity.Spigot
++    {
++
++        /**
++         * Gets the connection address of this player, regardless of whether it
++         * has been spoofed or not.
++         *
++         * @return the player's connection address
++         */
++        public InetSocketAddress getRawAddress()
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        public void playEffect(Location location, Effect effect, int id, int data, float offsetX, float offsetY, float offsetZ, float speed, int particleCount, int radius)
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        /**
++         * Gets whether the player collides with entities
++         *
++         * @return the player's collision toggle state
++         */
++        public boolean getCollidesWithEntities()
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        /**
++         * Sets whether the player collides with entities
++         *
++         * @param collides whether the player should collide with entities or
++         * not.
++         */
++        public void setCollidesWithEntities(boolean collides)
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        /**
++         * Respawns the player if dead.
++         */
++        public void respawn()
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        /**
++         * Gets player locale language.
++         *
++         * @return the player's client language settings
++         */
++        public String getLocale()
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        /**
++         * Gets all players hidden with {@link hidePlayer( Player)}.
++         *
++         * @return a Set with all hidden players
++         */
++        public java.util.Set<Player> getHiddenPlayers()
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        /**
++         * Send a BaseComponent message from the BungeeCord Chat api.
++         */
++        public void sendMessage(BaseComponent component) {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        public /* varargs */ void sendMessage(BaseComponent ... components) {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++
++        public int getPing()
++        {
++            throw new UnsupportedOperationException( "Not supported yet." );
++        }
++
++        //Crucible start
++        /**
++         * Sends the component to the specified screen position of this player
++         *
++         * @param position the screen position
++         * @param component the components to send
++         */
++        public void sendMessage(net.md_5.bungee.api.ChatMessageType position, net.md_5.bungee.api.chat.BaseComponent component) {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++
++        /**
++         * Sends an array of components as a single message to the specified screen position of this player
++         *
++         * @param position the screen position
++         * @param components the components to send
++         */
++        public void sendMessage(net.md_5.bungee.api.ChatMessageType position, net.md_5.bungee.api.chat.BaseComponent... components) {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        //Crucible end
++
++    }
++
++    Spigot spigot();
++    // Spigot end
++
++    // Crucible start
++
++    /**
++     * Sends a title and a subtitle message to the player. If either of these
++     * values are null, they will not be sent and the display will remain
++     * unchanged. If they are empty strings, the display will be updated as
++     * such. If the strings contain a new line, only the first line will be
++     * sent. The titles will be displayed with the client's default timings.
++     *
++     * @param title Title text
++     * @param subtitle Subtitle text
++     * @deprecated API behavior subject to change
++     */
++    @Deprecated
++    void sendTitle(String title, String subtitle);
++
++    /**
++     * Sends a title and a subtitle message to the player. If either of these
++     * values are null, they will not be sent and the display will remain
++     * unchanged. If they are empty strings, the display will be updated as
++     * such. If the strings contain a new line, only the first line will be
++     * sent. All timings values may take a value of -1 to indicate that they
++     * will use the last value sent (or the defaults if no title has been
++     * displayed).
++     *
++     * @param title Title text
++     * @param subtitle Subtitle text
++     * @param fadeIn time in ticks for titles to fade in. Defaults to 10.
++     * @param stay time in ticks for titles to stay. Defaults to 70.
++     * @param fadeOut time in ticks for titles to fade out. Defaults to 20.
++     */
++    void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut);
++
++    /**
++     * Resets the title displayed to the player. This will clear the displayed
++     * title / subtitle and reset timings to their default values.
++     */
++    void resetTitle();
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location.
++     *
++     * @param particle the particle to spawn
++     * @param location the location to spawn at
++     * @param count the number of particles
++     */
++    void spawnParticle(Particle particle, Location location, int count);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location.
++     *
++     * @param particle the particle to spawn
++     * @param x the position on the x axis to spawn at
++     * @param y the position on the y axis to spawn at
++     * @param z the position on the z axis to spawn at
++     * @param count the number of particles
++     */
++    void spawnParticle(Particle particle, double x, double y, double z, int count);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location.
++     *
++     * @param particle the particle to spawn
++     * @param location the location to spawn at
++     * @param count the number of particles
++     * @param data the data to use for the particle or null,
++     *             the type of this depends on {@link Particle#getDataType()}
++     */
++    <T> void spawnParticle(Particle particle, Location location, int count, T data);
++
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location.
++     *
++     * @param particle the particle to spawn
++     * @param x the position on the x axis to spawn at
++     * @param y the position on the y axis to spawn at
++     * @param z the position on the z axis to spawn at
++     * @param count the number of particles
++     * @param data the data to use for the particle or null,
++     *             the type of this depends on {@link Particle#getDataType()}
++     */
++    <T> void spawnParticle(Particle particle, double x, double y, double z, int count, T data);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param location the location to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     */
++    void spawnParticle(Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param x the position on the x axis to spawn at
++     * @param y the position on the y axis to spawn at
++     * @param z the position on the z axis to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     */
++    void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param location the location to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     * @param data the data to use for the particle or null,
++     *             the type of this depends on {@link Particle#getDataType()}
++     */
++    <T> void spawnParticle(Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ, T data);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param x the position on the x axis to spawn at
++     * @param y the position on the y axis to spawn at
++     * @param z the position on the z axis to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     * @param data the data to use for the particle or null,
++     *             the type of this depends on {@link Particle#getDataType()}
++     */
++    <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, T data);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param location the location to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     * @param extra the extra data for this particle, depends on the
++     *              particle used (normally speed)
++     */
++    void spawnParticle(Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ, double extra);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param x the position on the x axis to spawn at
++     * @param y the position on the y axis to spawn at
++     * @param z the position on the z axis to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     * @param extra the extra data for this particle, depends on the
++     *              particle used (normally speed)
++     */
++    void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param location the location to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     * @param extra the extra data for this particle, depends on the
++     *              particle used (normally speed)
++     * @param data the data to use for the particle or null,
++     *             the type of this depends on {@link Particle#getDataType()}
++     */
++    <T> void spawnParticle(Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ, double extra, T data);
++
++    /**
++     * Spawns the particle (the number of times specified by count)
++     * at the target location. The position of each particle will be
++     * randomized positively and negatively by the offset parameters
++     * on each axis.
++     *
++     * @param particle the particle to spawn
++     * @param x the position on the x axis to spawn at
++     * @param y the position on the y axis to spawn at
++     * @param z the position on the z axis to spawn at
++     * @param count the number of particles
++     * @param offsetX the maximum random offset on the X axis
++     * @param offsetY the maximum random offset on the Y axis
++     * @param offsetZ the maximum random offset on the Z axis
++     * @param extra the extra data for this particle, depends on the
++     *              particle used (normally speed)
++     * @param data the data to use for the particle or null,
++     *             the type of this depends on {@link Particle#getDataType()}
++     */
++    <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data);
++
++    /**
++     * Gets the currently displayed player list header for this player.
++     *
++     * @return player list header or null
++     */
++    public String getPlayerListHeader();
++
++    /**
++     * Gets the currently displayed player list footer for this player.
++     *
++     * @return player list header or null
++     */
++    public String getPlayerListFooter();
++
++    /**
++     * Sets the currently displayed player list header for this player.
++     *
++     * @param header player list header, null for empty
++     */
++    void setPlayerListHeader(String header);
++
++    /**
++     * Sets the currently displayed player list footer for this player.
++     *
++     * @param footer player list footer, null for empty
++     */
++    void setPlayerListFooter(String footer);
++
++    /**
++     * Sets the currently displayed player list header and footer for this
++     * player.
++     *
++     * @param header player list header, null for empty
++     * @param footer player list footer, null for empty
++     */
++    void setPlayerListHeaderFooter(String header, String footer);
++
++    //Crucible end
+ }
